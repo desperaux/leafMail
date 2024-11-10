@@ -5,58 +5,82 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Send Email with Leaf Mail</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        form { max-width: 500px; }
+        body { font-family: Arial, sans-serif; margin: 20px; display: flex; }
+        form { max-width: 500px; width: 50%; }
         label { font-weight: bold; }
         input, select, textarea { width: 100%; padding: 8px; margin-top: 5px; margin-bottom: 15px; }
         button { padding: 10px 15px; font-size: 16px; cursor: pointer; }
         .success { color: green; }
         .error { color: red; }
+        .preview { padding: 20px; background-color: #f9f9f9; border: 1px solid #ddd; margin-left: 20px; width: 50%; overflow-y: auto; }
+        .preview h2 { font-size: 20px; margin-top: 0; }
     </style>
 </head>
 <body>
-    <h1>    <img src="https://camo.githubusercontent.com/0abecb61b0a89e0123a6435e0b5efadbe409a5fb88fe7d2249ee297247182088/68747470733a2f2f6c6561667068702e6e65746c6966792e6170702f6173736574732f696d672f6c656166332d6c6f676f2e706e67" alt="" width="30px">LeafMail V2</h1>
-    <form action="sendEmail.php" method="POST" enctype="multipart/form-data">
-        <label for="host">SMTP Host</label>
-        <input type="text" name="host" placeholder="e.g., smtp.example.com" required>
+    <div>
+        <h1><img src="https://camo.githubusercontent.com/0abecb61b0a89e0123a6435e0b5efadbe409a5fb88fe7d2249ee297247182088/68747470733a2f2f6c6561667068702e6e65746c6966792e6170702f6173736574732f696d672f6c656166332d6c6f676f2e706e67" alt="" width="30px">LeafMail V2</h1>
+        <form action="sendEmail.php" method="POST" enctype="multipart/form-data">
+            <label for="host">SMTP Host</label>
+            <input type="text" name="host" placeholder="e.g., smtp.example.com" required>
 
-        <label for="username">SMTP Username</label>
-        <input type="email" name="username" placeholder="Your email address" required>
+            <label for="username">SMTP Username</label>
+            <input type="email" name="username" placeholder="Your email address" required>
 
-        <label for="password">SMTP Password</label>
-        <input type="password" name="password" placeholder="Your email password" required>
+            <label for="password">SMTP Password</label>
+            <input type="password" name="password" placeholder="Your email password" required>
 
-        <label for="port">SMTP Port</label>
-        <input type="number" name="port" placeholder="e.g., 587 for TLS, 465 for SSL" required>
+            <label for="port">SMTP Port</label>
+            <input type="number" name="port" placeholder="e.g., 587 for TLS, 465 for SSL" required>
 
-        <label for="encryption">Encryption</label>
-        <select name="encryption" required>
-            <option value="tls">TLS</option>
-            <option value="ssl">SSL</option>
-        </select>
+            <label for="encryption">Encryption</label>
+            <select name="encryption" required>
+                <option value="tls">TLS</option>
+                <option value="ssl">SSL</option>
+            </select>
 
-        <label for="from">From Email</label>
-        <input type="email" name="from" placeholder="Your email address" required>
+            <label for="from">From Email</label>
+            <input type="email" name="from" placeholder="Your email address" required>
 
-        <label for="fromName">From Name</label>
-        <input type="text" name="fromName" placeholder="Your name or company name" required>
+            <label for="fromName">From Name</label>
+            <input type="text" name="fromName" placeholder="Your name or company name" required>
 
-        <label for="to">Recipient Email</label>
-        <input type="email" name="to" placeholder="Recipient's email address" required>
+            <label for="to">Recipient Emails (one per line)</label>
+            <textarea name="to" rows="4" placeholder="Paste recipient emails here, one per line" oninput="countEmails()" required></textarea>
+            <p id="emailCount">Total Emails: 0</p>
 
-        <label for="subject">Subject</label>
-        <input type="text" name="subject" placeholder="Email subject" required>
+            <label for="subject">Subject</label>
+            <input type="text" name="subject" placeholder="Email subject" required>
 
-        <label for="messageText">Message (Plain Text)</label>
-        <textarea name="messageText" rows="4" placeholder="Enter your plain text message here." required></textarea>
+            <label for="messageText">Message (Plain Text)</label>
+            <textarea name="messageText" rows="4" placeholder="Enter your plain text message here." required></textarea>
 
-        <label for="messageHtml">Message (HTML)</label>
-        <textarea name="messageHtml" rows="4" placeholder="Enter your HTML message here. You can use HTML tags, e.g., <h1>Hello</h1>, <p>This is a message.</p>" required></textarea>
+            <label for="messageHtml">Message (HTML)</label>
+            <textarea name="messageHtml" rows="4" placeholder="Enter your HTML message here." oninput="updatePreview()" required></textarea>
 
-        <label for="attachments">Attachments</label>
-        <input type="file" name="attachments[]" multiple>
+            <label for="attachments">Attachments</label>
+            <input type="file" name="attachments[]" multiple>
 
-        <button type="submit">Send Email</button>
-    </form>
+            <button type="submit">Send Email</button>
+        </form>
+    </div>
+    
+    <div class="preview">
+        <h2>Email Preview</h2>
+        <div id="previewContent">Your HTML content preview will appear here as you type.</div>
+    </div>
+
+    <script>
+        function updatePreview() {
+            const previewContent = document.getElementById('previewContent');
+            const htmlMessage = document.querySelector('textarea[name="messageHtml"]').value;
+            previewContent.innerHTML = htmlMessage;
+        }
+
+        function countEmails() {
+            const toField = document.querySelector('textarea[name="to"]').value;
+            const emailCount = toField.split('\n').filter(email => email.trim()).length;
+            document.getElementById('emailCount').innerText = `Total Emails: ${emailCount}`;
+        }
+    </script>
 </body>
 </html>
